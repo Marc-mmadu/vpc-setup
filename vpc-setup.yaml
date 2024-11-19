@@ -28,7 +28,7 @@
         cidr: "{{ pubsub1Cidr}}"
         map_public: yes
         resource_tags:
-          name: vprofile-pubsub1
+          Name: vprofile-pubsub1
       register: pubsub1_out
 
     - name: create public subnet 2 in zone2
@@ -40,7 +40,7 @@
         cidr: "{{ pubsub2Cidr}}"
         map_public: yes
         resource_tags:
-          name: vprofile-pubsub2
+          Name: vprofile-pubsub2
       register: pubsub2_out
 
     - name: create public subnet 3 in zone3
@@ -52,7 +52,7 @@
         cidr: "{{ pubsub3Cidr}}"
         map_public: yes
         resource_tags:
-          name: vprofile-pubsub3
+          Name: vprofile-pubsub3
       register: pubsub3_out
 
     - name: create private subnet 1 in zone1
@@ -64,7 +64,7 @@
         cidr: "{{ privsub1Cidr}}"
         map_public: yes
         resource_tags:
-          name: vprofile-privsub1
+          Name: vprofile-privsub1
       register: privsub1_out
 
     - name: create private subnet 2 in zone2
@@ -76,7 +76,7 @@
         cidr: "{{ privsub1Cidr}}"
         map_public: yes
         resource_tags:
-          name: vprofile-privsub2
+          Name: vprofile-privsub2
       register: privsub2_out
 
       - name: create private subnet 3 in zone3
@@ -88,7 +88,7 @@
         cidr: "{{ privsub3Cidr}}"
         map_public: yes
         resource_tags:
-          name: vprofile-privsub3
+          Name: vprofile-privsub3
       register: privsub3_out
 
     - name: Internet Gateway Setup
@@ -97,5 +97,20 @@
         region: "{{ region}}"
         state: "{{ state}}"
         resource_tags:
-          name: vprofile-IGW
+          Name: vprofile-IGW
       register: igw_out
+
+    - name: Set up public subnet route table
+      ec2_vpc_route_table:
+        vpc_id: "{{ vpcout.vpc.id}}"
+        region: "{{ region}}"
+        tags:
+          Name: vprofile-pubRT
+        subnets:
+          - "{{pubsub1_out.subnet.id}}"
+          - "{{pubsub2_out.subnet.id}}"
+          - "{{pubsub3_out.subnet.id}}"
+        routes:
+          - dest: 0.0.0.0/0
+            gateway_id: "{{igw_out.gateway_id}}"
+      register: pubRT_out

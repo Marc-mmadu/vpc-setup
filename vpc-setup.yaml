@@ -16,7 +16,7 @@
         state: "'{{state}}"
       # this is to store the output
       register: vpcout
-    # using debug to module to print the output stored in register
+    # using debug module to print the output stored in register
     #- debug:
      #   var: vpout
 
